@@ -88,6 +88,19 @@ luminosidadePixel(Imagem *img, int col, int lin);
 Imagem *
 mallocImagem(int width, int height)
 {
+    int i;
+    Imagem *img = mallocSafe(sizeof(Imagem));
+    img -> width = width;
+    img -> height = height;
+    
+    img -> pixel = mallocSafe(height*sizeof(Pixel *));
+    //printf("\n%d %d\n", height, width);
+    for (i = 0; i < height; i++){
+        (img -> pixel)[i] = mallocSafe(width*sizeof(Pixel));
+        //printf("\n%d\n", i);
+    }
+
+    return img;
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
        do EP. Esse return devera ser removido depois que
@@ -148,6 +161,10 @@ freeRegioes(CelRegiao *iniRegioes)
 void 
 copieImagem(Imagem *destino, Imagem *origem)
 {
+    int i, j;
+    for (i = 0; i < destino -> height; i++)
+        for (j = 0; j < destino -> width; j++)
+            (destino -> pixel)[i][j] = (origem -> pixel[i][j]);
     AVISO(imagem: Vixe! Ainda nao fiz a funcao copieImagem.);
 }
 
@@ -172,8 +189,9 @@ getPixel(Imagem *img, int col, int lin)
        do EP. Essas linhas deverao ser removidas depois que
        a funcao estiver pronta.
     */
-    Pixel pixel; 
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao getPixel.);
+    Pixel pixel;
+    pixel = (img -> pixel)[lin][col];  
+    //AVISO(imagem: Vixe! Ainda nao fiz a funcao getPixel.);
     return pixel;    
 }
 
