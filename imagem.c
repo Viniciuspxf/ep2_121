@@ -165,7 +165,7 @@ copieImagem(Imagem *destino, Imagem *origem)
     for (i = 0; i < destino -> height; i++)
         for (j = 0; j < destino -> width; j++)
             (destino -> pixel)[i][j] = (origem -> pixel[i][j]);
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao copieImagem.);
+    // AVISO(imagem: Vixe! Ainda nao fiz a funcao copieImagem.);
 }
 
 /*-------------------------------------------------------------
@@ -208,7 +208,10 @@ getPixel(Imagem *img, int col, int lin)
 static void
 setPixel(Imagem *img, int col, int lin, Byte cor[])
 {
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao setPixel.);
+    int i;
+    for (i = 0; i < 3; i++)
+        img -> pixel[lin][col].cor[i] = cor[i];
+    //AVISO(imagem: Vixe! Ainda nao fiz a funcao setPixel.);
 }
 
 /*-------------------------------------------------------------
@@ -225,7 +228,11 @@ setPixel(Imagem *img, int col, int lin, Byte cor[])
 void 
 pinteImagem(Imagem *img, Byte cor[])
 {
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteImagem.);
+    int i, j;
+    for (i = 0; i < img -> height; i++)
+        for (j = 0; j < img -> width; j++)
+            setPixel(img, j, i, cor);
+    // AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteImagem.);
 }
 
 /*------------------------------------------------------------- 
