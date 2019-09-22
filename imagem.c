@@ -341,13 +341,27 @@ repinteRegioes(Imagem *img, CelRegiao *iniRegioes, int col, int lin,
 static Bool
 pixelBorda(Imagem *img, int limiar, int col, int lin)
 {
+    double gX = 0, gY = 0;
+    int i, j, l;
+
+    for (i = - 1; i < 2; i++){
+        l = (i == 0 ? 2 : 1);
+        for (j = - 1; j < 2; j += 2){
+            if (col + j < img -> width && col + j >= 0 && lin + i < img -> height && lin + i >= 0)
+                gX += l*j*luminosidadePixel(img, j, i);
+            if (col + i < img -> width && col + i >= 0 && lin + j < img -> height &&  lin + j >= 0)
+                gY += l*j*luminosidadePixel(img, i, j);
+        }
+    }
+
+    return (NORMA(gX, gY) > limiar ? TRUE : FALSE);
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
        do EP. Esse return devera ser removido depois que
        a funcao estiver pronta.
     */
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao pixelBorda.);
-    return FALSE; 
+    // AVISO(imagem: Vixe! Ainda nao fiz a funcao pixelBorda.);
+    //return FALSE; 
 }
 
 /*-------------------------------------------------------------
