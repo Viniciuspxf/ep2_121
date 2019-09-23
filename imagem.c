@@ -454,6 +454,30 @@ pixelBorda(Imagem *img, int limiar, int col, int lin)
 CelRegiao *
 segmenteImagem(Imagem *img, int limiar)
 {
+    CelRegiao *aux = NULL;
+    int i, j;
+    for (i = 0; i < img -> height; i++)
+        for (j = 0; j < img -> width; j++){
+            img -> pixel[i][j].regiao = NULL;
+        }
+
+    for (i = 0; i < img -> height; i++)
+        for (j = 0; j < img -> width; j++){
+            printf("b");
+            if (img -> pixel[i][j].regiao == NULL){
+                printf("c");
+                img -> pixel[i][j].regiao = mallocSafe(sizeof(CelRegiao));
+                img -> pixel[i][j].regiao -> borda = pixelBorda(img, limiar, j, i);
+                img -> pixel[i][j].regiao -> iniPixels = NULL;
+                img -> pixel[i][j].regiao -> nPixels = pixelsRegiao(img, limiar, j, i, img -> pixel[i][j].regiao);
+                if (i != 0 || j != 0)
+                    aux -> proxRegiao = img -> pixel[i][j].regiao;
+                aux =  img -> pixel[i][j].regiao;
+            }
+        }
+    return img -> pixel[0][0].regiao;
+    
+
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento do EP. 
        Esse return devera ser removido depois que a funcao estiver pronta.
@@ -580,12 +604,51 @@ segmenteImagem(Imagem *img, int limiar)
 static int
 pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
 {
+    printf("(%d , %d)", lin, col);
+    int i, contador = 0;
+    CelPixel *aux;
+    if (regiao -> borda == pixelBorda(img, limiar, col, lin)){
+        if (img -> pixel[lin][col].regiao == NULL){
+            img -> pixel[lin][col].regiao = regiao;
+            aux = img -> pixel[lin][col].regiao -> iniPixels;
+            if (img -> pixel[lin][col].regiao -> iniPixels == NULL){
+                img -> pixel[lin][col].regiao -> iniPixels = mallocSafe(sizeof(CelPixel));
+                aux = img -> pixel[lin][col].regiao -> iniPixels;
+            }
+            else {
+                aux = img -> pixel[lin][col].regiao -> iniPixels;
+                while (aux -> proxPixel != NULL)
+                    aux = aux -> proxPixel;
+                aux -> proxPixel = mallocSafe(sizeof(CelPixel));
+                aux = aux -> proxPixel;
+            }
+            aux -> lin = lin;
+            aux -> col = col;
+            aux -> proxPixel = NULL;
+        
+            if (regiao -> borda){
+                for (i = -1; i < 2; i += 2){
+                    printf("x");
+                    contador += (col + i >= 0 && col + i < img -> width? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
+                    contador += (lin + i >= 0 && lin + i < img -> height? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
+                }
+            }
+            else {
+                for (i = -1; i < 2; i += 2){
+                    printf("y");
+                    contador += (col + i >= 0 && col + i < img -> width? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
+                    contador += (lin + i >= 0 && lin + i < img -> height? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
+                }
+            }
+            return(1 + contador);
+        }
+    }
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
        do EP. Esse return devera ser removido depois que
        a funcao estiver pronta.
     */
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao pixelsRegiao.);
+    // AVISO(imagem: Vixe! Ainda nao fiz a funcao pixelsRegiao.);
     return 0;
 }
  

@@ -3,7 +3,7 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin) # Se for MACOS
 	GLLIB = -framework OpenGL -framework GLUT -framework Cocoa
 else 
-	GLLIB = -lGL -lGLU -lglut
+	GLLIB = -lGL -lGLU -lglut -lm
 endif
 CC     = gcc
 CFLAGS = -Wall -O2 -std=c99 -pedantic -Wno-unused-result -Wno-deprecated-declarations

@@ -95,6 +95,7 @@ main(int argc, char *argv[])
     }
 
     /* 5 segmente a imagem corrente (tela) criando a lista de regioes */
+        segmenteImagem(tela, LIMIAR);
 
     if (iniRegioes == NULL) 
     {
