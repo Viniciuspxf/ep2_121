@@ -97,7 +97,7 @@ mallocImagem(int width, int height)
     //printf("\n%d %d\n", height, width);
     for (i = 0; i < height; i++){
         (img -> pixel)[i] = mallocSafe(width*sizeof(Pixel));
-        //printf("\n%d\n", i);
+        //printf("%d ", i);
     }
 
     return img;
@@ -348,9 +348,9 @@ pixelBorda(Imagem *img, int limiar, int col, int lin)
         l = (i == 0 ? 2 : 1);
         for (j = - 1; j < 2; j += 2){
             if (col + j < img -> width && col + j >= 0 && lin + i < img -> height && lin + i >= 0)
-                gX += l*j*luminosidadePixel(img, j, i);
+                gX += l*j*luminosidadePixel(img, col + j, lin + i);
             if (col + i < img -> width && col + i >= 0 && lin + j < img -> height &&  lin + j >= 0)
-                gY += l*j*luminosidadePixel(img, i, j);
+                gY += l*j*luminosidadePixel(img, col + i, lin + j);
         }
     }
 
@@ -455,7 +455,12 @@ CelRegiao *
 segmenteImagem(Imagem *img, int limiar)
 {
     CelRegiao *aux = NULL;
+
     int i, j;
+    //for (i = 0;i < img -> height; i++)
+        //for (j = 0; j < img -> width; j++)
+            //printf("%d", pixelBorda(img, limiar, j, i));
+    
     for (i = 0; i < img -> height; i++)
         for (j = 0; j < img -> width; j++){
             img -> pixel[i][j].regiao = NULL;
@@ -463,9 +468,9 @@ segmenteImagem(Imagem *img, int limiar)
 
     for (i = 0; i < img -> height; i++)
         for (j = 0; j < img -> width; j++){
-            printf("b");
+            //printf("b");
             if (img -> pixel[i][j].regiao == NULL){
-                printf("c");
+                //printf("c");
                 img -> pixel[i][j].regiao = mallocSafe(sizeof(CelRegiao));
                 img -> pixel[i][j].regiao -> borda = pixelBorda(img, limiar, j, i);
                 img -> pixel[i][j].regiao -> iniPixels = NULL;
@@ -604,7 +609,7 @@ segmenteImagem(Imagem *img, int limiar)
 static int
 pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
 {
-    printf("(%d , %d)", lin, col);
+    //printf("(%d , %d)", lin, col);
     int i, contador = 0;
     CelPixel *aux;
     if (regiao -> borda == pixelBorda(img, limiar, col, lin)){
@@ -628,16 +633,18 @@ pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
         
             if (regiao -> borda){
                 for (i = -1; i < 2; i += 2){
-                    printf("x");
-                    contador += (col + i >= 0 && col + i < img -> width? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
-                    contador += (lin + i >= 0 && lin + i < img -> height? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
+                    //printf("x");
+                    contador += (col + i >= 0 && col + i < img -> width ? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
+                    contador += (lin + i >= 0 && lin + i < img -> height ? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
+                    contador += (col + i >= 0 && col + i < img -> width && lin + i >= 0 && lin + i < img -> height ? pixelsRegiao(img, limiar, col + i, lin + i, regiao): 0);
+                    contador += (col + i >= 0 && col + i < img -> width && lin - i >= 0 && lin - i < img -> height ? pixelsRegiao(img, limiar, col + i, lin - i, regiao): 0);
                 }
             }
             else {
-                for (i = -1; i < 2; i += 2){
-                    printf("y");
-                    contador += (col + i >= 0 && col + i < img -> width? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
-                    contador += (lin + i >= 0 && lin + i < img -> height? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
+                 for (i = -1; i < 2; i += 2){
+                   //printf("y");
+                    contador += (col + i >= 0 && col + i < img -> width ? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
+                    contador += (lin + i >= 0 && lin + i < img -> height ? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
                 }
             }
             return(1 + contador);

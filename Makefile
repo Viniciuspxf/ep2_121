@@ -6,12 +6,12 @@ else
 	GLLIB = -lGL -lGLU -lglut -lm
 endif
 CC     = gcc
-CFLAGS = -Wall -O2 -std=c99 -pedantic -Wno-unused-result -Wno-deprecated-declarations
+CFLAGS = -Wall -O2 -std=c99 -pedantic -Wno-unused-result -Wno-deprecated-declarations -g
 
 #------------------------------------------------
 
 ep2: main.o graphic.o imagem.o io.o
-	$(CC) main.o graphic.o imagem.o io.o -o ep2 $(GLLIB)
+	$(CC) -g main.o graphic.o imagem.o io.o -o ep2 $(GLLIB)
 
 main.o: main.c imagem.h graphic.h io.h  
 	$(CC) $(CFLAGS) -c main.c 

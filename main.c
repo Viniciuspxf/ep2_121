@@ -71,7 +71,7 @@ main(int argc, char *argv[])
     //printf("%s", nomeArquivo);
 
     /* 2. carregue de uma arquivo, no formato PPM, a imagem original */
-    //printf("TEEEEESTE1");
+    //printf("TEEEEESTE1\n\n");
     imgOriginal = carregueImagemPPM(nomeArquivo);
     //printf("TEEEEESTE2");
     if (imgOriginal == NULL) 
@@ -86,6 +86,8 @@ main(int argc, char *argv[])
 
     /* 4 copie a imagem original (lida) para a imagem corrente (tela) */ 
 
+    //printf("EEEEEEEEEE");
+
         copieImagem(tela, imgOriginal);
 
     if (tela == NULL) 
@@ -93,9 +95,10 @@ main(int argc, char *argv[])
         AVISO(main: Vixe! ainda nao criei a imagem corrente.);
         return 0;    
     }
+    //printf("EEEEEEEEEE");
 
     /* 5 segmente a imagem corrente (tela) criando a lista de regioes */
-        segmenteImagem(tela, LIMIAR);
+        iniRegioes = segmenteImagem(tela, LIMIAR);
 
     if (iniRegioes == NULL) 
     {
