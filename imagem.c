@@ -271,6 +271,27 @@ pinteImagem(Imagem *img, Byte cor[])
 void
 pinteRegioes(Imagem *img, CelRegiao *iniRegioes, Bool borda)
 {
+    int i,j, col, lin;
+    CelRegiao *apontadorRegiao;
+    CelPixel *apontadorPixel;
+    apontadorRegiao = iniRegioes;
+    for (j = 2; apontadorRegiao != NULL; j++){
+        j = j % NUM_CORES;
+        if (apontadorRegiao -> borda == borda){
+            for (i = 0; i < 3; i++){
+                apontadorRegiao -> cor[i] = cores[i][j];
+            }
+            apontadorPixel = apontadorRegiao -> iniPixels;
+            while (apontadorPixel != NULL){
+                lin = apontadorPixel -> lin;
+                col = apontadorPixel -> col;
+                //setPixel(img, col, lin, apontadorRegiao -> cor);
+                apontadorPixel = apontadorPixel -> proxPixel;
+            }
+        }    
+        apontadorRegiao = apontadorRegiao -> proxRegiao;
+    }
+    
     AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
 }
 
@@ -353,7 +374,8 @@ pixelBorda(Imagem *img, int limiar, int col, int lin)
                 gY += l*j*luminosidadePixel(img, col + i, lin + j);
         }
     }
-
+    if (lin == 0 && col == 0)
+        printf("\n\n\n\n (%lf, %lf)\n\n\n\n", gX, gY);
     return (NORMA(gX, gY) > limiar ? TRUE : FALSE);
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
@@ -455,11 +477,14 @@ CelRegiao *
 segmenteImagem(Imagem *img, int limiar)
 {
     CelRegiao *aux = NULL;
+    pixelBorda(img, limiar, 0,0);
 
     int i, j;
-    //for (i = 0;i < img -> height; i++)
-        //for (j = 0; j < img -> width; j++)
-            //printf("%d", pixelBorda(img, limiar, j, i));
+    /*for (i = 0;i < img -> height; i++){
+        for (j = 0; j < img -> width; j++)
+            printf("%d", pixelBorda(img, limiar, j, i));
+        printf("\n");
+    }*/
     
     for (i = 0; i < img -> height; i++)
         for (j = 0; j < img -> width; j++){
@@ -468,12 +493,12 @@ segmenteImagem(Imagem *img, int limiar)
 
     for (i = 0; i < img -> height; i++)
         for (j = 0; j < img -> width; j++){
-            //printf("b");
             if (img -> pixel[i][j].regiao == NULL){
-                //printf("c");
+                //printf("i = %d, j = %d\n", i, j);
                 img -> pixel[i][j].regiao = mallocSafe(sizeof(CelRegiao));
                 img -> pixel[i][j].regiao -> borda = pixelBorda(img, limiar, j, i);
                 img -> pixel[i][j].regiao -> iniPixels = NULL;
+                img -> pixel[i][j].regiao -> proxRegiao = NULL;
                 img -> pixel[i][j].regiao -> nPixels = pixelsRegiao(img, limiar, j, i, img -> pixel[i][j].regiao);
                 if (i != 0 || j != 0)
                     aux -> proxRegiao = img -> pixel[i][j].regiao;
@@ -609,7 +634,7 @@ segmenteImagem(Imagem *img, int limiar)
 static int
 pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
 {
-    //printf("(%d , %d)", lin, col);
+    printf("(%d , %d)\n", lin, col);
     int i, contador = 0;
     CelPixel *aux;
     if (regiao -> borda == pixelBorda(img, limiar, col, lin)){

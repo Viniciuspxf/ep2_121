@@ -64,6 +64,8 @@ main(int argc, char *argv[])
     Imagem *tela          = NULL; /* ponteiro para a imagem corrente ou atual */
     CelRegiao *iniRegioes = NULL; /* ponteiro para a lista de regioes */
     char *nomeArquivo;
+    CelRegiao *apontador;
+    int contadorregioes = 0;
 
     /* 1. pegue da linha de comando o nome do arquivo com a imagem */
     //printf("TEEEEEESTE");
@@ -99,6 +101,11 @@ main(int argc, char *argv[])
 
     /* 5 segmente a imagem corrente (tela) criando a lista de regioes */
         iniRegioes = segmenteImagem(tela, LIMIAR);
+        for (apontador = iniRegioes; apontador != NULL; apontador = apontador -> proxRegiao){
+            printf("\nRegiao %d com %d pixels", contadorregioes, apontador -> nPixels);
+            contadorregioes++;
+
+        }
 
     if (iniRegioes == NULL) 
     {
