@@ -374,8 +374,8 @@ pixelBorda(Imagem *img, int limiar, int col, int lin)
                 gY += l*j*luminosidadePixel(img, col + i, lin + j);
         }
     }
-    if (lin == 0 && col == 0)
-        printf("\n\n\n\n (%lf, %lf)\n\n\n\n", gX, gY);
+    //if (lin == 0 && col == 0)
+        //printf("\n\n\n\n (%lf, %lf)\n\n\n\n", gX, gY);
     return (NORMA(gX, gY) > limiar ? TRUE : FALSE);
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
@@ -634,31 +634,31 @@ segmenteImagem(Imagem *img, int limiar)
 static int
 pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
 {
-    printf("(%d , %d)\n", lin, col);
+    //printf("(%d , %d)\n", lin, col);
     int i, contador = 0;
     CelPixel *aux;
-    if (regiao -> borda == pixelBorda(img, limiar, col, lin)){
-        if (img -> pixel[lin][col].regiao == NULL){
+    if (regiao -> borda == pixelBorda(img, limiar, col, lin)) {
+        if (img -> pixel[lin][col].regiao == NULL) {
             img -> pixel[lin][col].regiao = regiao;
             aux = img -> pixel[lin][col].regiao -> iniPixels;
-            if (img -> pixel[lin][col].regiao -> iniPixels == NULL){
+            while (aux -> proxPixel != NULL)
+                aux = aux -> proxPixel;
+            aux -> proxPixel = mallocSafe(sizeof(CelPixel));
+            aux = aux -> proxPixel;
+            contador++;
+        }
+        else if (img -> pixel[lin][col].regiao -> iniPixels == NULL) {
                 img -> pixel[lin][col].regiao -> iniPixels = mallocSafe(sizeof(CelPixel));
                 aux = img -> pixel[lin][col].regiao -> iniPixels;
+                contador++;
             }
-            else {
-                aux = img -> pixel[lin][col].regiao -> iniPixels;
-                while (aux -> proxPixel != NULL)
-                    aux = aux -> proxPixel;
-                aux -> proxPixel = mallocSafe(sizeof(CelPixel));
-                aux = aux -> proxPixel;
-            }
+        
+        if (contador) {
             aux -> lin = lin;
             aux -> col = col;
             aux -> proxPixel = NULL;
-        
-            if (regiao -> borda){
-                for (i = -1; i < 2; i += 2){
-                    //printf("x");
+            if (regiao -> borda) {
+                for (i = -1; i < 2; i += 2) {
                     contador += (col + i >= 0 && col + i < img -> width ? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
                     contador += (lin + i >= 0 && lin + i < img -> height ? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
                     contador += (col + i >= 0 && col + i < img -> width && lin + i >= 0 && lin + i < img -> height ? pixelsRegiao(img, limiar, col + i, lin + i, regiao): 0);
@@ -666,14 +666,13 @@ pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
                 }
             }
             else {
-                 for (i = -1; i < 2; i += 2){
-                   //printf("y");
+                for (i = -1; i < 2; i += 2) {
                     contador += (col + i >= 0 && col + i < img -> width ? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
                     contador += (lin + i >= 0 && lin + i < img -> height ? pixelsRegiao(img, limiar, col, lin + i, regiao): 0);
                 }
             }
-            return(1 + contador);
         }
+        return(contador);
     }
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
