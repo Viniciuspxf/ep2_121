@@ -148,7 +148,10 @@ main(int argc, char *argv[])
 void 
 quit(Imagem *tela, Imagem *img, CelRegiao *iniRegioes)
 {
-    AVISO(main.c: Vixe Ainda nao fiz a funcao quit.);
+    freeRegioes(iniRegioes);
+    freeImagem(img);
+    freeImagem(tela);
+    //AVISO(main.c: Vixe Ainda nao fiz a funcao quit.);
     exit(EXIT_SUCCESS); /* a execução do programa termina neste ponto */
 }
 

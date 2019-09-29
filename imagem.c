@@ -123,7 +123,12 @@ mallocImagem(int width, int height)
 void
 freeImagem(Imagem *img)
 {
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao freeImagem.);
+    int i;
+    for (i = 0; i < img -> height; i++)
+        free(img -> pixel[i]);
+    free(img -> pixel);
+    free(img);
+    //AVISO(imagem: Vixe! Ainda nao fiz a funcao freeImagem.);
 }
 
 
@@ -140,7 +145,20 @@ freeImagem(Imagem *img)
 void 
 freeRegioes(CelRegiao *iniRegioes)
 {
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao freeRegioes);
+    CelPixel *auxPixel, *anteriorPixel;
+    CelRegiao *auxRegiao = iniRegioes, *anteriorRegiao;
+    while (auxRegiao != NULL) {
+        auxPixel = auxRegiao -> iniPixels;
+        while (auxPixel != NULL){
+            anteriorPixel = auxPixel;
+            auxPixel = auxPixel -> proxPixel;
+            free(anteriorPixel);
+        }
+        anteriorRegiao = auxRegiao;
+        auxRegiao = auxRegiao -> proxRegiao;
+        free(anteriorRegiao);
+    }
+    //AVISO(imagem: Vixe! Ainda nao fiz a funcao freeRegioes);
 }
 
 
@@ -275,8 +293,8 @@ pinteRegioes(Imagem *img, CelRegiao *iniRegioes, Bool borda)
     CelRegiao *apontadorRegiao;
     CelPixel *apontadorPixel;
     apontadorRegiao = iniRegioes;
-    for (j = 2; apontadorRegiao != NULL; j++){
-        j = j % NUM_CORES;
+    while (apontadorRegiao != NULL){
+        j = rand() % NUM_CORES;
         if (apontadorRegiao -> borda == borda){
             for (i = 0; i < 3; i++){
                 apontadorRegiao -> cor[i] = cores[i][j];
@@ -285,14 +303,13 @@ pinteRegioes(Imagem *img, CelRegiao *iniRegioes, Bool borda)
             while (apontadorPixel != NULL){
                 lin = apontadorPixel -> lin;
                 col = apontadorPixel -> col;
-                //setPixel(img, col, lin, apontadorRegiao -> cor);
+                setPixel(img, col, lin, apontadorRegiao -> cor);
                 apontadorPixel = apontadorPixel -> proxPixel;
             }
         }    
         apontadorRegiao = apontadorRegiao -> proxRegiao;
     }
-    
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
+    //AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
 }
 
 /*-------------------------------------------------------------
@@ -315,7 +332,18 @@ pinteRegioes(Imagem *img, CelRegiao *iniRegioes, Bool borda)
 void
 repinteRegiao(Imagem *img, int col, int lin, Byte cor[])
 {
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegiao.);
+    int i;
+    CelPixel *aux = img -> pixel[lin][col].regiao -> iniPixels;
+
+    for (i = 0; i < 3; i++) {
+        img -> pixel[aux -> lin][aux -> col].regiao -> cor[i] = cor[i];
+    }
+
+    while (aux != NULL) {
+        setPixel(img, aux -> col, aux -> lin, cor);
+        aux = aux -> proxPixel;
+    }
+    //AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegiao.);
 }
 
 /*------------------------------------------------------------- 
@@ -343,6 +371,20 @@ void
 repinteRegioes(Imagem *img, CelRegiao *iniRegioes, int col, int lin, 
                Byte cor[])
 {
+    /*printf("OOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+    CelRegiao *auxRegiao = iniRegioes;
+    int mesmaCor, i;
+    printf("AAAAAAAAAAAAAH");
+    for (i = 0; i < 3; i++) printf("%d = %d", i, cor[i]);
+    while (auxRegiao != NULL){
+        mesmaCor = 1;
+        for (i = 0; i < 3; i++) 
+            if (auxRegiao -> cor[i] != cor[i]) mesmaCor = 0;
+        if (mesmaCor){
+            repinteRegiao(img,auxRegiao -> iniPixels -> col,auxRegiao -> iniPixels -> lin ,cor);
+            printf("a");
+        }
+    }*/
     AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
 }
 
@@ -640,23 +682,19 @@ pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
     if (regiao -> borda == pixelBorda(img, limiar, col, lin)) {
         if (img -> pixel[lin][col].regiao == NULL) {
             img -> pixel[lin][col].regiao = regiao;
-            aux = img -> pixel[lin][col].regiao -> iniPixels;
-            while (aux -> proxPixel != NULL)
-                aux = aux -> proxPixel;
-            aux -> proxPixel = mallocSafe(sizeof(CelPixel));
-            aux = aux -> proxPixel;
+            aux = img -> pixel[lin][col].regiao -> iniPixels;    
             contador++;
         }
         else if (img -> pixel[lin][col].regiao -> iniPixels == NULL) {
-                img -> pixel[lin][col].regiao -> iniPixels = mallocSafe(sizeof(CelPixel));
-                aux = img -> pixel[lin][col].regiao -> iniPixels;
+                aux = NULL;
                 contador++;
-            }
+        }
         
         if (contador) {
-            aux -> lin = lin;
-            aux -> col = col;
-            aux -> proxPixel = NULL;
+            img -> pixel[lin][col].regiao -> iniPixels = mallocSafe(sizeof(CelPixel));
+            img -> pixel[lin][col].regiao -> iniPixels -> lin = lin;
+            img -> pixel[lin][col].regiao -> iniPixels -> col = col;
+            img -> pixel[lin][col].regiao -> iniPixels -> proxPixel = aux;
             if (regiao -> borda) {
                 for (i = -1; i < 2; i += 2) {
                     contador += (col + i >= 0 && col + i < img -> width ? pixelsRegiao(img, limiar, col + i, lin, regiao): 0);
@@ -672,7 +710,6 @@ pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
                 }
             }
         }
-        return(contador);
     }
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
@@ -680,7 +717,7 @@ pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
        a funcao estiver pronta.
     */
     // AVISO(imagem: Vixe! Ainda nao fiz a funcao pixelsRegiao.);
-    return 0;
+    return contador;
 }
  
 
