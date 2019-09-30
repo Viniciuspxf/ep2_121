@@ -368,24 +368,27 @@ repinteRegiao(Imagem *img, int col, int lin, Byte cor[])
 */
 
 void
-repinteRegioes(Imagem *img, CelRegiao *iniRegioes, int col, int lin, 
-               Byte cor[])
+repinteRegioes(Imagem *img, CelRegiao *iniRegioes, int col, int lin, Byte cor[])
 {
-    /*printf("OOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
     CelRegiao *auxRegiao = iniRegioes;
-    int mesmaCor, i;
-    printf("AAAAAAAAAAAAAH");
-    for (i = 0; i < 3; i++) printf("%d = %d", i, cor[i]);
-    while (auxRegiao != NULL){
-        mesmaCor = 1;
-        for (i = 0; i < 3; i++) 
-            if (auxRegiao -> cor[i] != cor[i]) mesmaCor = 0;
-        if (mesmaCor){
-            repinteRegiao(img,auxRegiao -> iniPixels -> col,auxRegiao -> iniPixels -> lin ,cor);
-            printf("a");
+    CelPixel *auxPixel;
+    int temCor, i;
+
+    while (auxRegiao != NULL) {
+        auxPixel = auxRegiao->iniPixels;
+        temCor = 0;
+        while (auxPixel != NULL && !temCor) {
+            temCor = 1;
+            for (i = 0; i < 3; i++) {
+                if (img->pixel[lin][col].cor[i] != img->pixel[auxPixel->lin][auxPixel->col].cor[i])
+                    temCor = 0;
+            }
+            auxPixel = auxPixel->proxPixel;
         }
-    }*/
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
+        if (temCor) repinteRegiao(img, auxPixel->col, auxPixel->lin, cor);
+        auxRegiao = auxRegiao->proxRegiao;
+    }
+    //AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
 }
 
 /*------------------------------------------------------------- 
