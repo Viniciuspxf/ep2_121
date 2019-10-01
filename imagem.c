@@ -370,23 +370,24 @@ repinteRegiao(Imagem *img, int col, int lin, Byte cor[])
 void
 repinteRegioes(Imagem *img, CelRegiao *iniRegioes, int col, int lin, Byte cor[])
 {
-    CelRegiao *auxRegiao = iniRegioes;
-    CelPixel *auxPixel;
+    CelRegiao *auxRegiao;
+    CelPixel *auxPixel1, *auxPixel2;
     int temCor, i;
 
-    while (auxRegiao != NULL) {
-        auxPixel = auxRegiao->iniPixels;
+    for (auxRegiao = iniRegioes; auxRegiao != NULL; auxRegiao = auxRegiao->proxRegiao) {
         temCor = 0;
-        while (auxPixel != NULL && !temCor) {
-            temCor = 1;
-            for (i = 0; i < 3; i++) {
-                if (img->pixel[lin][col].cor[i] != img->pixel[auxPixel->lin][auxPixel->col].cor[i])
-                    temCor = 0;
+        for (auxPixel1 = auxRegiao->iniPixels; auxPixel1 != NULL && !temCor; auxPixel1 = auxPixel1->proxPixel) {
+            temCor = 0;
+            for (auxPixel2 = img->pixel[lin][col].regiao->iniPixels; auxPixel2 != NULL && !temCor; auxPixel2 = auxPixel2->proxPixel){
+                temCor = 1;
+                for (i = 0; i < 3; i++) {
+                    if (img->pixel[auxPixel2->lin][auxPixel2->col].cor[i] != img->pixel[auxPixel1->lin][auxPixel1->col].cor[i])
+                        temCor = 0;
+                }
+                
             }
-            auxPixel = auxPixel->proxPixel;
         }
-        if (temCor) repinteRegiao(img, auxPixel->col, auxPixel->lin, cor);
-        auxRegiao = auxRegiao->proxRegiao;
+        if (temCor) repinteRegiao(img, auxPixel1->col, auxPixel1->lin, cor);
     }
     //AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
 }
