@@ -100,13 +100,6 @@ mallocImagem(int width, int height)
     }
 
     return img;
-    /* O objetivo do return a seguir e evitar que 
-       ocorra erro de sintaxe durante a fase de desenvolvimento 
-       do EP. Esse return devera ser removido depois que
-       a funcao estiver pronta.
-    */
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao mallocImagem);
-    return NULL;
 }
 
 
@@ -197,12 +190,6 @@ copieImagem(Imagem *destino, Imagem *origem)
 Pixel
 getPixel(Imagem *img, int col, int lin)
 {
-    /* 
-       O objetivo das linhas de codigo a seguir e evitar que 
-       ocorra erro de sintaxe durante a fase de desenvolvimento 
-       do EP. Essas linhas deverao ser removidas depois que
-       a funcao estiver pronta.
-    */
     Pixel pixel;
     pixel = (img -> pixel)[lin][col];  
     return pixel;    
@@ -405,11 +392,6 @@ pixelBorda(Imagem *img, int limiar, int col, int lin)
     }
     
     return (NORMA(gX, gY) > limiar ? TRUE : FALSE);
-    /* O objetivo do return a seguir e evitar que 
-       ocorra erro de sintaxe durante a fase de desenvolvimento 
-       do EP. Esse return devera ser removido depois que
-       a funcao estiver pronta.
-    */
 }
 
 /*-------------------------------------------------------------
@@ -525,15 +507,14 @@ segmenteImagem(Imagem *img, int limiar)
                 aux =  img -> pixel[i][j].regiao;
             }
         }
-    return img -> pixel[0][0].regiao;
-    
 
-    /* O objetivo do return a seguir e evitar que 
-       ocorra erro de sintaxe durante a fase de desenvolvimento do EP. 
-       Esse return devera ser removido depois que a funcao estiver pronta.
-    */
-    AVISO(imagem: Vixe! Ainda nao fiz a funcao segmenteImagem.);
-    return NULL; 
+    printf("Grupos de pixeis de uma mesma regiao:\n");
+    i = 0;
+    for (aux = img->pixel[0][0].regiao; aux != NULL; aux = aux->proxRegiao){
+        printf("Grupo %d com %d pixels\n", i, aux->nPixels);
+        i++;
+    }
+    return img -> pixel[0][0].regiao;
 }
 
 /*------------------------------------------------------------- 
@@ -689,11 +670,6 @@ pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
             }
         }
     }
-    /* O objetivo do return a seguir e evitar que 
-       ocorra erro de sintaxe durante a fase de desenvolvimento 
-       do EP. Esse return devera ser removido depois que
-       a funcao estiver pronta.
-    */
     return contador;
 }
  

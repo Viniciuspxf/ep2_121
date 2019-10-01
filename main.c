@@ -71,6 +71,11 @@ main(int argc, char *argv[])
 
     nomeArquivo = argv[1];
 
+    if (nomeArquivo == NULL) {
+        mostreUso(argv[0]);
+        return 0;
+    } 
+
     /* 2. carregue de uma arquivo, no formato PPM, a imagem original */
     
     imgOriginal = carregueImagemPPM(nomeArquivo);
@@ -96,12 +101,8 @@ main(int argc, char *argv[])
     }
 
     /* 5 segmente a imagem corrente (tela) criando a lista de regioes */
+    
         iniRegioes = segmenteImagem(tela, LIMIAR);
-        for (apontador = iniRegioes; apontador != NULL; apontador = apontador -> proxRegiao){
-            printf("\nRegiao %d com %d pixels", contadorregioes, apontador -> nPixels);
-            contadorregioes++;
-
-        }
 
     if (iniRegioes == NULL) 
     {
