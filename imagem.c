@@ -94,10 +94,9 @@ mallocImagem(int width, int height)
     img -> height = height;
     
     img -> pixel = mallocSafe(height*sizeof(Pixel *));
-    //printf("\n%d %d\n", height, width);
+
     for (i = 0; i < height; i++){
         (img -> pixel)[i] = mallocSafe(width*sizeof(Pixel));
-        //printf("%d ", i);
     }
 
     return img;
@@ -128,7 +127,6 @@ freeImagem(Imagem *img)
         free(img -> pixel[i]);
     free(img -> pixel);
     free(img);
-    //AVISO(imagem: Vixe! Ainda nao fiz a funcao freeImagem.);
 }
 
 
@@ -158,7 +156,6 @@ freeRegioes(CelRegiao *iniRegioes)
         auxRegiao = auxRegiao -> proxRegiao;
         free(anteriorRegiao);
     }
-    //AVISO(imagem: Vixe! Ainda nao fiz a funcao freeRegioes);
 }
 
 
@@ -183,7 +180,6 @@ copieImagem(Imagem *destino, Imagem *origem)
     for (i = 0; i < destino -> height; i++)
         for (j = 0; j < destino -> width; j++)
             (destino -> pixel)[i][j] = (origem -> pixel[i][j]);
-    // AVISO(imagem: Vixe! Ainda nao fiz a funcao copieImagem.);
 }
 
 /*-------------------------------------------------------------
@@ -209,7 +205,6 @@ getPixel(Imagem *img, int col, int lin)
     */
     Pixel pixel;
     pixel = (img -> pixel)[lin][col];  
-    //AVISO(imagem: Vixe! Ainda nao fiz a funcao getPixel.);
     return pixel;    
 }
 
@@ -229,7 +224,6 @@ setPixel(Imagem *img, int col, int lin, Byte cor[])
     int i;
     for (i = 0; i < 3; i++)
         img -> pixel[lin][col].cor[i] = cor[i];
-    //AVISO(imagem: Vixe! Ainda nao fiz a funcao setPixel.);
 }
 
 /*-------------------------------------------------------------
@@ -250,7 +244,6 @@ pinteImagem(Imagem *img, Byte cor[])
     for (i = 0; i < img -> height; i++)
         for (j = 0; j < img -> width; j++)
             setPixel(img, j, i, cor);
-    // AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteImagem.);
 }
 
 /*------------------------------------------------------------- 
@@ -295,9 +288,9 @@ pinteRegioes(Imagem *img, CelRegiao *iniRegioes, Bool borda)
     apontadorRegiao = iniRegioes;
     while (apontadorRegiao != NULL){
         j = rand() % NUM_CORES;
-        if (apontadorRegiao -> borda == borda){
+        if (apontadorRegiao->borda || !borda){
             for (i = 0; i < 3; i++){
-                apontadorRegiao -> cor[i] = cores[i][j];
+                apontadorRegiao -> cor[i] = cores[j][i];
             }
             apontadorPixel = apontadorRegiao -> iniPixels;
             while (apontadorPixel != NULL){
@@ -309,7 +302,6 @@ pinteRegioes(Imagem *img, CelRegiao *iniRegioes, Bool borda)
         }    
         apontadorRegiao = apontadorRegiao -> proxRegiao;
     }
-    //AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
 }
 
 /*-------------------------------------------------------------
@@ -343,7 +335,6 @@ repinteRegiao(Imagem *img, int col, int lin, Byte cor[])
         setPixel(img, aux -> col, aux -> lin, cor);
         aux = aux -> proxPixel;
     }
-    //AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegiao.);
 }
 
 /*------------------------------------------------------------- 
@@ -371,25 +362,17 @@ void
 repinteRegioes(Imagem *img, CelRegiao *iniRegioes, int col, int lin, Byte cor[])
 {
     CelRegiao *auxRegiao;
-    CelPixel *auxPixel1, *auxPixel2;
-    int temCor, i;
+    int temCor, i = 0;
+    Byte corPixel[3];
+
+    for (i = 0; i < 3; i++) corPixel[i] = img->pixel[lin][col].regiao->cor[i];
 
     for (auxRegiao = iniRegioes; auxRegiao != NULL; auxRegiao = auxRegiao->proxRegiao) {
-        temCor = 0;
-        for (auxPixel1 = auxRegiao->iniPixels; auxPixel1 != NULL && !temCor; auxPixel1 = auxPixel1->proxPixel) {
-            temCor = 0;
-            for (auxPixel2 = img->pixel[lin][col].regiao->iniPixels; auxPixel2 != NULL && !temCor; auxPixel2 = auxPixel2->proxPixel){
-                temCor = 1;
-                for (i = 0; i < 3; i++) {
-                    if (img->pixel[auxPixel2->lin][auxPixel2->col].cor[i] != img->pixel[auxPixel1->lin][auxPixel1->col].cor[i])
-                        temCor = 0;
-                }
-                
-            }
-        }
-        if (temCor) repinteRegiao(img, auxPixel1->col, auxPixel1->lin, cor);
+        temCor = 1;
+        for (i = 0; i < 3; i++)
+            if (auxRegiao->cor[i] != corPixel[i]) temCor = 0;
+        if (temCor) repinteRegiao(img, auxRegiao->iniPixels->col, auxRegiao->iniPixels->lin, cor);
     }
-    //AVISO(imagem: Vixe! Ainda nao fiz a funcao pinteRegioes.);
 }
 
 /*------------------------------------------------------------- 
@@ -420,16 +403,13 @@ pixelBorda(Imagem *img, int limiar, int col, int lin)
                 gY += l*j*luminosidadePixel(img, col + i, lin + j);
         }
     }
-    //if (lin == 0 && col == 0)
-        //printf("\n\n\n\n (%lf, %lf)\n\n\n\n", gX, gY);
+    
     return (NORMA(gX, gY) > limiar ? TRUE : FALSE);
     /* O objetivo do return a seguir e evitar que 
        ocorra erro de sintaxe durante a fase de desenvolvimento 
        do EP. Esse return devera ser removido depois que
        a funcao estiver pronta.
     */
-    // AVISO(imagem: Vixe! Ainda nao fiz a funcao pixelBorda.);
-    //return FALSE; 
 }
 
 /*-------------------------------------------------------------
@@ -526,11 +506,6 @@ segmenteImagem(Imagem *img, int limiar)
     pixelBorda(img, limiar, 0,0);
 
     int i, j;
-    /*for (i = 0;i < img -> height; i++){
-        for (j = 0; j < img -> width; j++)
-            printf("%d", pixelBorda(img, limiar, j, i));
-        printf("\n");
-    }*/
     
     for (i = 0; i < img -> height; i++)
         for (j = 0; j < img -> width; j++){
@@ -540,7 +515,6 @@ segmenteImagem(Imagem *img, int limiar)
     for (i = 0; i < img -> height; i++)
         for (j = 0; j < img -> width; j++){
             if (img -> pixel[i][j].regiao == NULL){
-                //printf("i = %d, j = %d\n", i, j);
                 img -> pixel[i][j].regiao = mallocSafe(sizeof(CelRegiao));
                 img -> pixel[i][j].regiao -> borda = pixelBorda(img, limiar, j, i);
                 img -> pixel[i][j].regiao -> iniPixels = NULL;
@@ -680,7 +654,7 @@ segmenteImagem(Imagem *img, int limiar)
 static int
 pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
 {
-    //printf("(%d , %d)\n", lin, col);
+
     int i, contador = 0;
     CelPixel *aux;
     if (regiao -> borda == pixelBorda(img, limiar, col, lin)) {
@@ -720,7 +694,6 @@ pixelsRegiao(Imagem *img, int limiar, int col, int lin, CelRegiao *regiao)
        do EP. Esse return devera ser removido depois que
        a funcao estiver pronta.
     */
-    // AVISO(imagem: Vixe! Ainda nao fiz a funcao pixelsRegiao.);
     return contador;
 }
  

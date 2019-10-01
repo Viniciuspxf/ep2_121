@@ -68,14 +68,13 @@ main(int argc, char *argv[])
     int contadorregioes = 0;
 
     /* 1. pegue da linha de comando o nome do arquivo com a imagem */
-    //printf("TEEEEEESTE");
+
     nomeArquivo = argv[1];
-    //printf("%s", nomeArquivo);
 
     /* 2. carregue de uma arquivo, no formato PPM, a imagem original */
-    //printf("TEEEEESTE1\n\n");
+    
     imgOriginal = carregueImagemPPM(nomeArquivo);
-    //printf("TEEEEESTE2");
+
     if (imgOriginal == NULL) 
     {
         AVISO(main: Vixe! ainda nao li a imagem original.);
@@ -84,20 +83,17 @@ main(int argc, char *argv[])
   
     /* 3 crie a imagem corrente (tela) em que trabalharemos */
 
-        tela = mallocImagem(imgOriginal -> width, imgOriginal -> height);
+    tela = mallocImagem(imgOriginal -> width, imgOriginal -> height);
 
     /* 4 copie a imagem original (lida) para a imagem corrente (tela) */ 
 
-    //printf("EEEEEEEEEE");
-
-        copieImagem(tela, imgOriginal);
+    copieImagem(tela, imgOriginal);
 
     if (tela == NULL) 
     {
         AVISO(main: Vixe! ainda nao criei a imagem corrente.);
         return 0;    
     }
-    //printf("EEEEEEEEEE");
 
     /* 5 segmente a imagem corrente (tela) criando a lista de regioes */
         iniRegioes = segmenteImagem(tela, LIMIAR);
@@ -151,7 +147,7 @@ quit(Imagem *tela, Imagem *img, CelRegiao *iniRegioes)
     freeRegioes(iniRegioes);
     freeImagem(img);
     freeImagem(tela);
-    //AVISO(main.c: Vixe Ainda nao fiz a funcao quit.);
+
     exit(EXIT_SUCCESS); /* a execução do programa termina neste ponto */
 }
 
